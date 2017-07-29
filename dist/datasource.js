@@ -64,7 +64,7 @@ System.register(['lodash'], function (_export, _context) {
             }
 
             return this.doRequest({
-              url: this.url + '/query',
+              url: this.url + '/grafana/query',
               data: query,
               method: 'POST'
             });
@@ -73,7 +73,7 @@ System.register(['lodash'], function (_export, _context) {
           key: 'testDatasource',
           value: function testDatasource() {
             return this.doRequest({
-              url: this.url + '/',
+              url: this.url + '/grafana',
               method: 'GET'
             }).then(function (response) {
               if (response.status === 200) {
@@ -98,7 +98,7 @@ System.register(['lodash'], function (_export, _context) {
             };
 
             return this.doRequest({
-              url: this.url + '/annotations',
+              url: this.url + '/grafana/annotations',
               method: 'POST',
               data: annotationQuery
             }).then(function (result) {
@@ -113,7 +113,7 @@ System.register(['lodash'], function (_export, _context) {
             };
 
             return this.doRequest({
-              url: this.url + '/search',
+              url: this.url + '/grafana/search',
               data: interpolated,
               method: 'POST'
             }).then(this.mapToTextValue);
