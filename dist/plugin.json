@@ -1,6 +1,6 @@
 {
-  "name": "SimpleJson",
-  "id": "grafana-simple-json-datasource",
+  "name": "Ramen",
+  "id": "grafana-ramen-datasource",
   "type": "datasource",
 
   "partials": {
@@ -11,21 +11,23 @@
   "annotations": true,
 
   "info": {
-    "description": "simple json datasource",
+    "description": "Access exported tuples from Ramen",
     "author": {
-      "name": "Grafana Labs",
-      "url": "https://grafana.com"
+      "name": "rixed",
+      "url": "https://github.com/rixed/ramen-grafana-datasource"
     },
     "logos": {
       "small": "img/simpleJson_logo.svg",
       "large": "img/simpleJson_logo.svg"
     },
     "links": [
-      {"name": "GitHub", "url": "https://github.com/grafana/simple-json-datasource"},
+      {"name": "GitHub", "url": "https://github.com/rixed/ramen-grafana-datasource"},
       {"name": "MIT License", "url": "https://github.com/grafana/simple-json-datasource/blob/master/LICENSE"}
     ],
-    "version": "1.3.4",
-    "updated": "2017-05-10"
+
+    "keywords": ["ramen", "datasource"],
+    "version": "0.0.1",
+    "updated": "2017-07-29"
   },
 
   "dependencies": {
