@@ -116,7 +116,8 @@ System.register(['lodash'], function (_export, _context) {
                   id: t.node + '(' + t.time_field + '→' + t.data_field + ')',
                   node: t.node,
                   time_field: t.time_field,
-                  data_field: t.data_field
+                  data_field: t.data_field,
+                  consolidation: "avg"
                 };
               })
             };

@@ -30,6 +30,7 @@ export class GenericDatasource {
           node: t.node,
           time_field: t.time_field,
           data_field: t.data_field,
+          consolidation: avg,
         };
       })
     };
