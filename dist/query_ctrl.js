@@ -67,20 +67,20 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           var _this = _possibleConstructorReturn(this, (GenericDatasourceQueryCtrl.__proto__ || Object.getPrototypeOf(GenericDatasourceQueryCtrl)).call(this, $scope, $injector));
 
           _this.scope = $scope;
-          _this.target.target = _this.target.target || 'select metric';
-          _this.target.type = _this.target.type || 'timeserie';
           return _this;
         }
 
         _createClass(GenericDatasourceQueryCtrl, [{
           key: 'getOptions',
-          value: function getOptions(query) {
-            return this.datasource.metricFindQuery(query || '');
-          }
-        }, {
-          key: 'toggleEditorMode',
-          value: function toggleEditorMode() {
-            this.target.rawQuery = !this.target.rawQuery;
+          value: function getOptions(what, query) {
+            if (what == 'nodes') {
+              return this.datasource.completeNodes(query || '');
+            } else {
+              if (this.target.node) {
+                return this.datasource.completeFields(this.target.node, query || '');
+              }
+            }
+            return [];
           }
         }, {
           key: 'onChangeInternal',

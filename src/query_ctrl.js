@@ -7,16 +7,17 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     super($scope, $injector);
 
     this.scope = $scope;
-    this.target.target = this.target.target || 'select metric';
-    this.target.type = this.target.type || 'timeserie';
   }
 
-  getOptions(query) {
-    return this.datasource.metricFindQuery(query || '');
-  }
-
-  toggleEditorMode() {
-    this.target.rawQuery = !this.target.rawQuery;
+  getOptions(what, query) {
+    if (what == 'nodes') {
+      return this.datasource.completeNodes(query || '');
+    } else {
+      if (this.target.node) {
+        return this.datasource.completeFields(this.target.node, query || '');
+      }
+    }
+    return [];
   }
 
   onChangeInternal() {

@@ -17,17 +17,43 @@ export class GenericDatasource {
   }
 
   query(options) {
-    var query = this.buildQueryParameters(options);
-    query.targets = query.targets.filter(t => !t.hide);
+    var query = {
+      from: options.range.from.valueOf(),
+      to: options.range.to.valueOf(),
+      interval_ms: options.intervalMs,
+      max_data_points: options.maxDataPoints,
+      timeseries: options.targets.filter(t =>
+        !t.hide && t.node && t.time_field && t.data_field
+      ).map(t => {
+        return {
+          id: t.node + '(' + t.time_field + '→' + t.data_field + ')',
+          node: t.node,
+          time_field: t.time_field,
+          data_field: t.data_field,
+        };
+      })
+    };
 
-    if (query.targets.length <= 0) {
+    if (query.timeseries.length <= 0) {
       return this.q.when({data: []});
     }
 
     return this.doRequest({
-      url: this.url + '/grafana/query',
+      url: this.url + '/timeseries',
       data: query,
       method: 'POST'
+    }).then(response => {
+      if (response.status === 200) {
+        let data = response.data.map(ts => {
+          return {
+            target: ts.id,
+            datapoints: [...ts.times.entries()]
+                        .map(([i, t]) => [ts.values[i], t])
+                        .sort(([_v1,t1], [_v2,t2]) => t1-t2)
+          };
+        });
+        return { data: data };
+      }
     });
   }
 
@@ -65,27 +91,33 @@ export class GenericDatasource {
     });
   }
 
-  metricFindQuery(query) {
+  completeNodes(query) {
     var interpolated = {
-        target: this.templateSrv.replace(query, null, 'regex')
+        node_prefix: this.templateSrv.replace(query, null, 'regex')
     };
 
     return this.doRequest({
-      url: this.url + '/grafana/search',
+      url: this.url + '/complete/nodes',
+      data: interpolated,
+      method: 'POST',
+    }).then(this.mapToTextValue);
+  }
+
+  completeFields(node, query) {
+    var interpolated = {
+        node: node,
+        field_prefix: this.templateSrv.replace(query, null, 'regex')
+    };
+
+    return this.doRequest({
+      url: this.url + '/complete/fields',
       data: interpolated,
       method: 'POST',
     }).then(this.mapToTextValue);
   }
 
   mapToTextValue(result) {
-    return _.map(result.data, (d, i) => {
-      if (d && d.text && d.value) {
-        return { text: d.text, value: d.value };
-      } else if (_.isObject(d)) {
-        return { text: d, value: i};
-      }
-      return { text: d, value: d };
-    });
+    return result.data.sort().map(d => ({ text: d, value: d }));
   }
 
   doRequest(options) {
@@ -93,25 +125,5 @@ export class GenericDatasource {
     options.headers = this.headers;
 
     return this.backendSrv.datasourceRequest(options);
-  }
-
-  buildQueryParameters(options) {
-    //remove placeholder targets
-    options.targets = _.filter(options.targets, target => {
-      return target.target !== 'select metric';
-    });
-
-    var targets = _.map(options.targets, target => {
-      return {
-        target: this.templateSrv.replace(target.target, options.scopedVars, 'regex'),
-        refId: target.refId,
-        hide: target.hide,
-        type: target.type || 'timeserie'
-      };
-    });
-
-    options.targets = targets;
-
-    return options;
   }
 }
