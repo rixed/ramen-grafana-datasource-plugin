@@ -110,14 +110,13 @@ System.register(['lodash'], function (_export, _context) {
               interval_ms: options.intervalMs,
               max_data_points: options.maxDataPoints,
               timeseries: options.targets.filter(function (t) {
-                return !t.hide && t.node && t.time_field && t.data_field;
+                return !t.hide && t.node && t.data_field;
               }).map(function (t) {
                 return {
-                  id: t.node + '(' + t.time_field + '→' + t.data_field + ')',
+                  id: t.node + '(' + t.data_field + ')',
                   node: t.node,
-                  time_field: t.time_field,
                   data_field: t.data_field,
-                  consolidation: "avg"
+                  consolidation: t.consolidation
                 };
               })
             };

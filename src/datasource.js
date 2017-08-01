@@ -23,14 +23,13 @@ export class GenericDatasource {
       interval_ms: options.intervalMs,
       max_data_points: options.maxDataPoints,
       timeseries: options.targets.filter(t =>
-        !t.hide && t.node && t.time_field && t.data_field
+        !t.hide && t.node && t.data_field
       ).map(t => {
         return {
-          id: t.node + '(' + t.time_field + '→' + t.data_field + ')',
+          id: t.node + '(' + t.data_field + ')',
           node: t.node,
-          time_field: t.time_field,
           data_field: t.data_field,
-          consolidation: avg,
+          consolidation: t.consolidation,
         };
       })
     };

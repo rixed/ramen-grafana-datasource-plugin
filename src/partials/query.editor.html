@@ -10,18 +10,16 @@
     </div>
 
     <div class="gf-form max-width-20">
-      time:<gf-form-dropdown model="ctrl.target.time_field"
-        lookup-text="true"
-        get-options="ctrl.getOptions('fields', $query)"
-        on-change="ctrl.onChangeInternal()">
-      </gf-form-dropdown>
-    </div>
-    <div class="gf-form max-width-20">
       data:<gf-form-dropdown model="ctrl.target.data_field"
         lookup-text="true"
         get-options="ctrl.getOptions('fields', $query)"
         on-change="ctrl.onChangeInternal()">
       </gf-form-dropdown>
+    </div>
+
+    <div class="gf-form max-width-10">
+      consol:<select class="gf-form-input" ng-model="ctrl.target.consolidation"
+                ng-options="f as f for f in ['avg', 'max', 'min']"></select>
     </div>
   </div>
 </query-editor-row>
