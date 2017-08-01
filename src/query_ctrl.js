@@ -20,6 +20,10 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
     return [];
   }
 
+  getConsolidation() {
+    return this.datasource.mapToTextValue({ data: ['avg', 'max', 'min'] });
+  }
+
   onChangeInternal() {
     this.panelCtrl.refresh(); // Asks the panel to refresh data.
   }

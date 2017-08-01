@@ -83,6 +83,11 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
             return [];
           }
         }, {
+          key: 'getConsolidation',
+          value: function getConsolidation() {
+            return this.datasource.mapToTextValue({ data: ['avg', 'max', 'min'] });
+          }
+        }, {
           key: 'onChangeInternal',
           value: function onChangeInternal() {
             this.panelCtrl.refresh(); // Asks the panel to refresh data.
