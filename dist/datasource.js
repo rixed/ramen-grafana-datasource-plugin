@@ -101,6 +101,29 @@ System.register(['lodash'], function (_export, _context) {
           }
         }
 
+        /* We must perform everything in a single query:
+         * - request all the predefined timeseries
+         * - create (or update) a temporary, anonymous node with the given operation
+         * - add its exported time series into the result.
+         *
+         * It is probably easier to just send everything we have to ramen and leave
+         * it to it to construct the node etc. rather than try to do this from this
+         * grafana plugin.
+         * Bigger problem is: when do we delete those nodes? If they are cheap to create
+         * and have no (or not much) history then we can probably delete them after a few
+         * minutes we haven't been requested their data.
+         * Maybe we could have a longer timeout for group-bys for instance, but anything
+         * more persistent must fall into the 'predefined' category.
+         *
+         * So, ramen will first have to name the node, for instance according to a hash
+         * of the operation+from (at least we want to avoid creating a new node each time
+         * a client ask for the timeserie, esp since it involves compiling!)
+         * Then it create the layer and the node, with a 'temporary' flag, and record
+         * in the export table each time a timeserie is requested.
+         * A distinct thread can then yank the unused temporary nodes and empty layers.
+         */
+
+
         _createClass(GenericDatasource, [{
           key: 'query',
           value: function query(options) {
@@ -110,14 +133,34 @@ System.register(['lodash'], function (_export, _context) {
               interval_ms: options.intervalMs,
               max_data_points: options.maxDataPoints,
               timeseries: options.targets.filter(function (t) {
-                return !t.hide && t.node && t.data_field;
+                return !t.hide && (t.type == 'predefined' && t.node && t.data_field || t.type == 'new' && t.select_y && t.from);
               }).map(function (t) {
-                return {
-                  id: t.node + '(' + t.data_field + ')',
-                  node: t.node,
-                  data_field: t.data_field,
-                  consolidation: t.consolidation
-                };
+                if (t.type == 'predefined') {
+                  return {
+                    // Not exactly sure grafana actually uses this id for anything...
+                    id: t.node + '(' + t.data_field + ')',
+                    consolidation: t.consolidation,
+                    spec: {
+                      Predefined: {
+                        node: t.node,
+                        data_field: t.data_field
+                      }
+                    }
+                  };
+                } else {
+                  return {
+                    id: t.select_x + ',' + t.select_y + ' FROM ' + t.from,
+                    consolidation: t.consolidation,
+                    spec: {
+                      NewTempNode: {
+                        select_x: t.select_x,
+                        select_y: t.select_y,
+                        from: t.from,
+                        where: t.where || ''
+                      }
+                    }
+                  };
+                }
               })
             };
 
@@ -126,7 +169,7 @@ System.register(['lodash'], function (_export, _context) {
             }
 
             return this.doRequest({
-              url: this.url + '/timeseries',
+              url: 'timeseries',
               data: query,
               method: 'POST'
             }).then(function (response) {
@@ -161,7 +204,7 @@ System.register(['lodash'], function (_export, _context) {
           key: 'testDatasource',
           value: function testDatasource() {
             return this.doRequest({
-              url: this.url + '/grafana',
+              url: 'grafana',
               method: 'GET'
             }).then(function (response) {
               if (response.status === 200) {
@@ -186,7 +229,7 @@ System.register(['lodash'], function (_export, _context) {
             };
 
             return this.doRequest({
-              url: this.url + '/grafana/annotations',
+              url: 'grafana/annotations',
               method: 'POST',
               data: annotationQuery
             }).then(function (result) {
@@ -201,7 +244,7 @@ System.register(['lodash'], function (_export, _context) {
             };
 
             return this.doRequest({
-              url: this.url + '/complete/nodes',
+              url: 'complete/nodes',
               data: interpolated,
               method: 'POST'
             }).then(this.mapToTextValue);
@@ -215,7 +258,7 @@ System.register(['lodash'], function (_export, _context) {
             };
 
             return this.doRequest({
-              url: this.url + '/complete/fields',
+              url: 'complete/fields',
               data: interpolated,
               method: 'POST'
             }).then(this.mapToTextValue);
@@ -232,6 +275,8 @@ System.register(['lodash'], function (_export, _context) {
           value: function doRequest(options) {
             options.withCredentials = this.withCredentials;
             options.headers = this.headers;
+
+            options.url = /\/$/.test(this.url) ? this.url + options.url : this.url + '/' + options.url;
 
             return this.backendSrv.datasourceRequest(options);
           }

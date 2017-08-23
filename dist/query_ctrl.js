@@ -67,6 +67,8 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           var _this = _possibleConstructorReturn(this, (GenericDatasourceQueryCtrl.__proto__ || Object.getPrototypeOf(GenericDatasourceQueryCtrl)).call(this, $scope, $injector));
 
           _this.scope = $scope;
+          _this.target.consolidation = 'avg';
+          _this.target.type = 'predefined';
           return _this;
         }
 

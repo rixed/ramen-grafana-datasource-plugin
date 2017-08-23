@@ -5,8 +5,9 @@ export class GenericDatasourceQueryCtrl extends QueryCtrl {
 
   constructor($scope, $injector)  {
     super($scope, $injector);
-
     this.scope = $scope;
+    this.target.consolidation = 'avg';
+    this.target.type = 'predefined';
   }
 
   getOptions(what, query) {

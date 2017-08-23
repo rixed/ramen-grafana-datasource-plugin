@@ -1,23 +1,57 @@
 <query-editor-row query-ctrl="ctrl" class="generic-datasource-query-row" has-text-edit-mode="false">
   <div class="gf-form-inline">
 
-    <div class="gf-form max-width-30">
-      stream:<gf-form-dropdown model="ctrl.target.node"
+    <!-- first select whether we want a single exported metric or a new node -->
+    <div class="gf-form width-10">
+      <select class="gf-form-input"
+        ng-model="ctrl.target.type"
+        ng-options="f as f for f in ['predefined', 'new']">
+      </select>
+    </div>
+
+    <div ng-if="ctrl.target.type == 'predefined'" class="gf-form">
+      stream:<gf-form-dropdown class="width-20"
+        model="ctrl.target.node"
         lookup-text="true"
         get-options="ctrl.getOptions('nodes', $query)"
         on-change="ctrl.onChangeInternal()">
       </gf-form-dropdown>
-    </div>
 
-    <div class="gf-form max-width-20">
-      data:<gf-form-dropdown model="ctrl.target.data_field"
+      data:<gf-form-dropdown class="width-15"
+        model="ctrl.target.data_field"
         lookup-text="true"
         get-options="ctrl.getOptions('fields', $query)"
         on-change="ctrl.onChangeInternal()">
       </gf-form-dropdown>
     </div>
 
-    <div class="gf-form max-width-10">
+    <div ng-if="ctrl.target.type == 'new'" class="gf-form">
+      SELECT time:<input class="width-15"
+        ng-model="ctrl.target.select_x"
+        placeholder="[time]">
+			</input>
+      data:<input class="width-15"
+        ng-model="ctrl.target.select_y"
+        placeholder="expression"
+				required>
+			</input>
+
+      FROM:<gf-form-dropdown class="width-20"
+        model="ctrl.target.from"
+        lookup-text="true"
+        get-options="ctrl.getOptions('nodes', $query)"
+        on-change="ctrl.onChangeInternal()">
+      </gf-form-dropdown>
+
+      WHERE:<input class="width-15"
+        model="ctrl.target.where"
+        placeholder="expression">
+			</input>
+
+      <!-- etc: group by, commit, flush... -->
+    </div>
+
+    <div class="gf-form width-10">
       consol:<gf-form-dropdown model="ctrl.target.consolidation"
         lookup-text="true"
         get-options="ctrl.getConsolidation()"
