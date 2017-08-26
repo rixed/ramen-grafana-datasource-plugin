@@ -51,7 +51,7 @@ export class GenericDatasource {
       ).map(t => {
         if (t.type == 'predefined') {
           return {
-            // Not exactly sure grafana actually uses this id for anything...
+            // Id is used for the legend
             id: t.node + '(' + t.data_field + ')',
             consolidation: t.consolidation,
             spec: {
