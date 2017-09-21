@@ -137,7 +137,8 @@ export class GenericDatasource {
 
   completeNodes(query) {
     var interpolated = {
-        node_prefix: this.templateSrv.replace(query, null, 'regex')
+        node_prefix: this.templateSrv.replace(query, null, 'regex'),
+        only_exporting: true
     };
 
     return this.doRequest({

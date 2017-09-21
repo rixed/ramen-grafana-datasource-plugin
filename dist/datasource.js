@@ -240,7 +240,8 @@ System.register(['lodash'], function (_export, _context) {
           key: 'completeNodes',
           value: function completeNodes(query) {
             var interpolated = {
-              node_prefix: this.templateSrv.replace(query, null, 'regex')
+              node_prefix: this.templateSrv.replace(query, null, 'regex'),
+              only_exporting: true
             };
 
             return this.doRequest({
