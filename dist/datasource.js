@@ -128,9 +128,8 @@ System.register(['lodash'], function (_export, _context) {
           key: 'query',
           value: function query(options) {
             var query = {
-              from: options.range.from.valueOf(),
-              to: options.range.to.valueOf(),
-              interval_ms: options.intervalMs,
+              from: options.range.from.valueOf() * 0.001,
+              to: options.range.to.valueOf() * 0.001,
               max_data_points: options.maxDataPoints,
               timeseries: options.targets.filter(function (t) {
                 return !t.hide && (t.type == 'predefined' && t.node && t.data_field || t.type == 'new' && t.select_y && t.from);
@@ -182,7 +181,7 @@ System.register(['lodash'], function (_export, _context) {
                           i = _ref2[0],
                           t = _ref2[1];
 
-                      return [ts.values[i], t];
+                      return [ts.values[i], t * 1000];
                     }).sort(function (_ref3, _ref4) {
                       var _ref6 = _slicedToArray(_ref3, 2),
                           _v1 = _ref6[0],

@@ -39,9 +39,8 @@ export class GenericDatasource {
    */
   query(options) {
     var query = {
-      from: options.range.from.valueOf(),
-      to: options.range.to.valueOf(),
-      interval_ms: options.intervalMs,
+      from: options.range.from.valueOf() * 0.001,
+      to: options.range.to.valueOf() * 0.001,
       max_data_points: options.maxDataPoints,
       timeseries: options.targets.filter(t =>
         !t.hide && (
@@ -92,7 +91,7 @@ export class GenericDatasource {
           return {
             target: ts.id,
             datapoints: [...ts.times.entries()]
-                        .map(([i, t]) => [ts.values[i], t])
+                        .map(([i, t]) => [ts.values[i], t * 1000])
                         .sort(([_v1,t1], [_v2,t2]) => t1-t2)
           };
         });
