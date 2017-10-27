@@ -39,8 +39,8 @@ export class GenericDatasource {
    */
   query(options) {
     var query = {
-      from: options.range.from.valueOf() * 0.001,
-      to: options.range.to.valueOf() * 0.001,
+      since: options.range.from.valueOf() * 0.001,
+      until: options.range.to.valueOf() * 0.001,
       max_data_points: options.maxDataPoints,
       timeseries: options.targets.filter(t =>
         !t.hide && (
