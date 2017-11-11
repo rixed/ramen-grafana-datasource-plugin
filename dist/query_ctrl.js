@@ -69,6 +69,7 @@ System.register(['app/plugins/sdk', './css/query-editor.css!'], function (_expor
           _this.scope = $scope;
           _this.target.consolidation = _this.target.consolidation || 'avg';
           _this.target.type = _this.target.type || 'predefined';
+          _this.target.raw = false;
           return _this;
         }
 

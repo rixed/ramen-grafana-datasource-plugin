@@ -10,19 +10,34 @@
     </div>
 
     <div ng-if="ctrl.target.type == 'predefined'" class="gf-form">
-      stream:<gf-form-dropdown class="width-20"
-        model="ctrl.target.node"
-        lookup-text="true"
-        get-options="ctrl.getOptions('nodes', $query)"
-        on-change="ctrl.onChangeInternal()">
-      </gf-form-dropdown>
+      <div ng-if="ctrl.target.raw">
+        stream:<input class="width-20"
+          ng-model="ctrl.target.node"
+          placeholder="stream"
+          required>
+        field:<input class="width-15"
+          ng-model="ctrl.target.data_field"
+          placeholder="field"
+          required>
+      </div>
 
-      data:<gf-form-dropdown class="width-15"
-        model="ctrl.target.data_field"
-        lookup-text="true"
-        get-options="ctrl.getOptions('fields', $query)"
-        on-change="ctrl.onChangeInternal()">
-      </gf-form-dropdown>
+      <div ng-if="!ctrl.target.raw">
+        stream:<gf-form-dropdown class="width-20"
+          model="ctrl.target.node"
+          lookup-text="true"
+          get-options="ctrl.getOptions('nodes', $query)"
+          on-change="ctrl.onChangeInternal()">
+        </gf-form-dropdown>
+
+        field:<gf-form-dropdown class="width-15"
+          model="ctrl.target.data_field"
+          lookup-text="true"
+          get-options="ctrl.getOptions('fields', $query)"
+          on-change="ctrl.onChangeInternal()">
+        </gf-form-dropdown>
+      </div>
+
+      raw:<input class="width-5" type="checkbox" ng-model="ctrl.target.raw">
     </div>
 
     <div ng-if="ctrl.target.type == 'new'" class="gf-form">

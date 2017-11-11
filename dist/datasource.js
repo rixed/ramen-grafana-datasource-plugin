@@ -127,6 +127,8 @@ System.register(['lodash'], function (_export, _context) {
         _createClass(GenericDatasource, [{
           key: 'query',
           value: function query(options) {
+            var _this = this;
+
             var query = {
               since: options.range.from.valueOf() * 0.001,
               until: options.range.to.valueOf() * 0.001,
@@ -135,27 +137,33 @@ System.register(['lodash'], function (_export, _context) {
                 return !t.hide && (t.type == 'predefined' && t.node && t.data_field || t.type == 'new' && t.select_y && t.from);
               }).map(function (t) {
                 if (t.type == 'predefined') {
+                  var node = _this.templateSrv.replace(t.node, null, 'regex');
+                  var data_field = _this.templateSrv.replace(t.data_field, null, 'regex');
                   return {
                     // Id is used for the legend
-                    id: t.node + '(' + t.data_field + ')',
+                    id: node + '(' + data_field + ')',
                     consolidation: t.consolidation,
                     spec: {
                       Predefined: {
-                        node: t.node,
-                        data_field: t.data_field
+                        node: node,
+                        data_field: data_field
                       }
                     }
                   };
                 } else {
+                  var select_x = _this.templateSrv.replace(t.select_x, null, 'regex');
+                  var select_y = _this.templateSrv.replace(t.select_y, null, 'regex');
+                  var from = _this.templateSrv.replace(t.from, null, 'regex');
+                  var where = _this.templateSrv.replace(t.where, null, 'regex');
                   return {
-                    id: t.select_x + ',' + t.select_y + ' FROM ' + t.from,
+                    id: select_x + ',' + select_y + ' FROM ' + from,
                     consolidation: t.consolidation,
                     spec: {
                       NewTempNode: {
-                        select_x: t.select_x,
-                        select_y: t.select_y,
-                        from: t.from,
-                        where: t.where || ''
+                        select_x: select_x,
+                        select_y: select_y,
+                        from: from,
+                        where: where || ''
                       }
                     }
                   };

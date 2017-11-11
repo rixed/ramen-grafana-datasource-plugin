@@ -49,27 +49,33 @@ export class GenericDatasource {
         )
       ).map(t => {
         if (t.type == 'predefined') {
+          let node = this.templateSrv.replace(t.node, null, 'regex');
+          let data_field = this.templateSrv.replace(t.data_field, null, 'regex');
           return {
             // Id is used for the legend
-            id: t.node + '(' + t.data_field + ')',
+            id: node + '(' + data_field + ')',
             consolidation: t.consolidation,
             spec: {
               Predefined: {
-                node: t.node,
-                data_field: t.data_field,
+                node: node,
+                data_field: data_field,
               }
             },
           };
         } else {
+          let select_x = this.templateSrv.replace(t.select_x, null, 'regex');
+          let select_y = this.templateSrv.replace(t.select_y, null, 'regex');
+          let from = this.templateSrv.replace(t.from, null, 'regex');
+          let where = this.templateSrv.replace(t.where, null, 'regex');
           return {
-            id: t.select_x + ',' + t.select_y + ' FROM ' + t.from,
+            id: select_x + ',' + select_y + ' FROM ' + from,
             consolidation: t.consolidation,
             spec: {
               NewTempNode: {
-                select_x: t.select_x,
-                select_y: t.select_y,
-                from: t.from,
-                where: t.where || '',
+                select_x: select_x,
+                select_y: select_y,
+                from: from,
+                where: where || '',
               }
             },
           };
