@@ -103,24 +103,24 @@ System.register(['lodash'], function (_export, _context) {
 
         /* We must perform everything in a single query:
          * - request all the predefined timeseries
-         * - create (or update) a temporary, anonymous node with the given operation
+         * - create (or update) a temporary, anonymous function with the given operation
          * - add its exported time series into the result.
          *
          * It is probably easier to just send everything we have to ramen and leave
-         * it to it to construct the node etc. rather than try to do this from this
+         * it to it to construct the operation etc. rather than try to do this from this
          * grafana plugin.
-         * Bigger problem is: when do we delete those nodes? If they are cheap to create
+         * Bigger problem is: when do we delete those programs? If they are cheap to create
          * and have no (or not much) history then we can probably delete them after a few
          * minutes we haven't been requested their data.
          * Maybe we could have a longer timeout for group-bys for instance, but anything
          * more persistent must fall into the 'predefined' category.
          *
-         * So, ramen will first have to name the node, for instance according to a hash
-         * of the operation+from (at least we want to avoid creating a new node each time
+         * So, ramen will first have to name the operation, for instance according to a hash
+         * of the operation+from (at least we want to avoid creating a new program each time
          * a client ask for the timeserie, esp since it involves compiling!)
-         * Then it create the layer and the node, with a 'temporary' flag, and record
-         * in the export table each time a timeserie is requested.
-         * A distinct thread can then yank the unused temporary nodes and empty layers.
+         * Then it create the program and the operation, with a 'temporary' flag, and
+         * record in the export table each time a timeserie is requested.
+         * A distinct thread can then yank the unused temporary programs.
          */
 
 
@@ -145,7 +145,7 @@ System.register(['lodash'], function (_export, _context) {
                     consolidation: t.consolidation,
                     spec: {
                       Predefined: {
-                        node: node,
+                        operation: node,
                         data_field: data_field
                       }
                     }
@@ -247,12 +247,12 @@ System.register(['lodash'], function (_export, _context) {
           key: 'completeNodes',
           value: function completeNodes(query) {
             var interpolated = {
-              node_prefix: this.templateSrv.replace(query, null, 'regex'),
+              prefix: this.templateSrv.replace(query, null, 'regex'),
               only_exporting: true
             };
 
             return this.doRequest({
-              url: 'complete/nodes',
+              url: 'complete/operations',
               data: interpolated,
               method: 'POST'
             }).then(this.mapToTextValue);
@@ -261,8 +261,8 @@ System.register(['lodash'], function (_export, _context) {
           key: 'completeFields',
           value: function completeFields(node, query) {
             var interpolated = {
-              node: node,
-              field_prefix: this.templateSrv.replace(query, null, 'regex')
+              operation: node,
+              prefix: this.templateSrv.replace(query, null, 'regex')
             };
 
             return this.doRequest({
